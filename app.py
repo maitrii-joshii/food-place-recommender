@@ -196,7 +196,10 @@ except GroqClientError as e:
     st.stop()
 
 # ── Metadata ────────────────────────────────────────────────────────────────
-cities = sorted(df["location"].dropna().unique().tolist())
+# Build a map: display name (Title Case) → raw value (lowercase for matching)
+cities_raw = sorted(df["location"].dropna().unique().tolist())
+cities_display = [c.title() for c in cities_raw]
+cities_map = {c.title(): c for c in cities_raw}
 
 # ── Hero Section ────────────────────────────────────────────────────────────
 st.markdown(
@@ -219,7 +222,9 @@ with st.form("preferences_form"):
             unsafe_allow_html=True,
         )
         location = st.selectbox(
-            "city", options=["Select a city"] + cities, label_visibility="collapsed"
+            "city",
+            options=["Select a city"] + cities_display,
+            label_visibility="collapsed",
         )
 
     with col2:
@@ -275,10 +280,12 @@ if submit:
     if location == "Select a city":
         st.warning("Please select a City / Location.")
     else:
+        # Resolve display name back to lowercase raw value for matching
+        location_raw = cities_map.get(location, location.lower())
         with st.spinner("Finding the best places for you..."):
             try:
                 prefs = validate_preferences(
-                    location=location,
+                    location=location_raw,
                     budget=budget,
                     cuisine=cuisine if cuisine else "",
                     min_rating=str(min_rating),
@@ -312,12 +319,18 @@ if submit:
                         unsafe_allow_html=True,
                     )
 
-            except NoResultsError as e:
-                st.warning(str(e))
-            except NoCandidatesError as e:
-                st.warning(str(e))
+            except NoResultsError:
+                st.warning(
+                    "😕 No restaurants found matching your preferences. "
+                    "Try a different cuisine, lower the minimum rating, or broaden your budget."
+                )
+            except NoCandidatesError:
+                st.warning(
+                    "😕 Not enough candidates to generate recommendations. "
+                    "Try relaxing your filters."
+                )
             except FormatterError:
                 st.success("Here are your top recommendations!")
                 st.write(raw_response)
             except Exception as e:
-                st.error(f"An unexpected error occurred: {e}")
+                st.error(f"Something went wrong. Please try again. (Details: {e})")
