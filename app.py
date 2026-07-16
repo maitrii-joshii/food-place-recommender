@@ -1,18 +1,175 @@
 import streamlit as st
+
 from src.data import load_and_preprocess
 from src.filters import filter_restaurants, NoResultsError
 from src.filters.preferences import validate_preferences
-from src.prompt import build_system_prompt, build_user_prompt, NoCandidatesError
-from src.groq_client import GroqClient, GroqClientError
 from src.formatter import parse_llm_response, FormatterError
+from src.groq_client import GroqClient, GroqClientError
+from src.prompt import build_system_prompt, build_user_prompt, NoCandidatesError
 
 st.set_page_config(page_title="Food Recommender", page_icon="🍽️", layout="centered")
 
-st.title("🍽️ Food Recommender")
-st.markdown("AI-powered dining recommendations tailored for you.")
+# ── Custom CSS ──────────────────────────────────────────────────────────────
+st.markdown(
+    """
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* ── Global ── */
+html, body, [class*="css"] {
+    font-family: 'Inter', sans-serif;
+}
+.stApp {
+    background: #0d0f1e;
+    color: #e2e8f0;
+}
+
+/* hide default streamlit header/footer */
+#MainMenu, footer, header { visibility: hidden; }
+
+/* ── Hero ── */
+.hero-title {
+    text-align: center;
+    font-size: 2.8rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, #a855f7, #ec4899);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.4rem;
+    line-height: 1.2;
+}
+.hero-sub {
+    text-align: center;
+    color: #94a3b8;
+    font-size: 1rem;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+/* ── Card ── */
+.form-card {
+    background: #151728;
+    border: 1px solid #1e2340;
+    border-radius: 16px;
+    padding: 2rem 2.2rem 2.4rem;
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+/* ── Field labels ── */
+.field-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: #94a3b8;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 0.4rem;
+}
+
+/* ── Streamlit widget overrides ── */
+div[data-testid="stSelectbox"] > div > div {
+    background: #1e2340 !important;
+    border: 1px solid #2d3561 !important;
+    border-radius: 10px !important;
+    color: #e2e8f0 !important;
+}
+div[data-testid="stTextInput"] > div > div > input,
+div[data-testid="stTextArea"] textarea {
+    background: #1e2340 !important;
+    border: 1px solid #2d3561 !important;
+    border-radius: 10px !important;
+    color: #e2e8f0 !important;
+}
+div[data-testid="stTextInput"] > div > div > input::placeholder,
+div[data-testid="stTextArea"] textarea::placeholder {
+    color: #4b5280 !important;
+}
+
+/* ── Budget radio → pill buttons ── */
+div[data-testid="stRadio"] > div {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 0.5rem !important;
+}
+div[data-testid="stRadio"] > div > label {
+    background: #1e2340 !important;
+    border: 1px solid #2d3561 !important;
+    border-radius: 8px !important;
+    padding: 0.45rem 1.4rem !important;
+    color: #94a3b8 !important;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+div[data-testid="stRadio"] > div > label:has(input:checked) {
+    background: #312060 !important;
+    border-color: #a855f7 !important;
+    color: #e2e8f0 !important;
+}
+
+/* ── Slider ── */
+div[data-testid="stSlider"] div[role="slider"] {
+    background: #a855f7 !important;
+    border-color: #a855f7 !important;
+}
+
+/* ── Submit button ── */
+div[data-testid="stFormSubmitButton"] > button {
+    width: 100% !important;
+    background: linear-gradient(90deg, #7c3aed, #db2777) !important;
+    color: white !important;
+    font-weight: 700 !important;
+    font-size: 1.05rem !important;
+    border: none !important;
+    border-radius: 12px !important;
+    padding: 0.75rem 1rem !important;
+    margin-top: 0.5rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+div[data-testid="stFormSubmitButton"] > button:hover {
+    opacity: 0.9 !important;
+}
+
+/* ── Recommendation cards ── */
+.rec-card {
+    background: #151728;
+    border: 1px solid #1e2340;
+    border-radius: 14px;
+    padding: 1.2rem 1.5rem;
+    margin-bottom: 1rem;
+}
+.rec-rank {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #a855f7;
+    margin-bottom: 0.3rem;
+}
+.rec-name {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin-bottom: 0.5rem;
+}
+.rec-explanation {
+    color: #94a3b8;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+</style>
+""",
+    unsafe_allow_html=True,
+)
+
+# ── Initialization & Caching ────────────────────────────────────────────────
 
 
-# --- Initialization and Caching ---
 @st.cache_data(show_spinner=False)
 def load_data():
     return load_and_preprocess()
@@ -38,46 +195,88 @@ except GroqClientError as e:
     )
     st.stop()
 
-# --- Metadata for Form ---
+# ── Metadata ────────────────────────────────────────────────────────────────
 cities = sorted(df["location"].dropna().unique().tolist())
-all_cuisines = set(c for sublist in df["cuisines"].dropna() for c in sublist)
-cuisines = sorted(list(all_cuisines))
 
-# --- UI Form ---
+# ── Hero Section ────────────────────────────────────────────────────────────
+st.markdown(
+    '<div class="hero-title">Discover Your Next Meal</div>', unsafe_allow_html=True
+)
+st.markdown(
+    '<div class="hero-sub">Tell us what you\'re craving, and our AI will curate<br>the perfect dining experience for you.</div>',
+    unsafe_allow_html=True,
+)
+
+# ── Form ────────────────────────────────────────────────────────────────────
+st.markdown('<div class="form-card">', unsafe_allow_html=True)
+
 with st.form("preferences_form"):
-    st.subheader("Your Preferences")
+    col1, col2 = st.columns([1, 1])
 
-    location = st.selectbox("City / Location", options=[""] + cities)
-    budget = st.selectbox(
-        "Budget",
-        options=["low", "medium", "high"],
-        format_func=lambda x: {
-            "low": "Low (Affordable)",
-            "medium": "Medium (Moderate)",
-            "high": "High (Premium)",
-        }.get(x, x),
+    with col1:
+        st.markdown(
+            '<div class="field-label">📍 City (Required)</div>',
+            unsafe_allow_html=True,
+        )
+        location = st.selectbox(
+            "city", options=["Select a city"] + cities, label_visibility="collapsed"
+        )
+
+    with col2:
+        st.markdown(
+            '<div class="field-label">💰 Budget (Required)</div>',
+            unsafe_allow_html=True,
+        )
+        budget = st.radio(
+            "budget",
+            options=["low", "medium", "high"],
+            format_func=lambda x: {"low": "Low", "medium": "Med", "high": "High"}[x],
+            horizontal=True,
+            label_visibility="collapsed",
+        )
+
+    st.markdown(
+        '<div class="field-label">✕ Cuisine (Optional)</div>', unsafe_allow_html=True
+    )
+    cuisine = st.text_input(
+        "cuisine",
+        placeholder="e.g. Italian, Sushi, Vegan",
+        label_visibility="collapsed",
     )
 
-    # We allow typing custom cuisines or selecting from existing ones
-    cuisine = st.selectbox("Cuisine (Optional)", options=[""] + cuisines)
+    st.markdown(
+        '<div class="field-label">★ Minimum Rating</div>', unsafe_allow_html=True
+    )
     min_rating = st.slider(
-        "Minimum Rating (0 - 5)", min_value=0.0, max_value=5.0, value=4.0, step=0.1
-    )
-    extra_preferences = st.text_input(
-        "Extra Preferences (Optional)",
-        placeholder="e.g., outdoor seating, family-friendly, live music",
+        "min_rating",
+        min_value=0.0,
+        max_value=5.0,
+        value=4.0,
+        step=0.1,
+        label_visibility="collapsed",
     )
 
-    submit = st.form_submit_button("Find Places")
+    st.markdown(
+        '<div class="field-label">⚡ Extra Preferences</div>', unsafe_allow_html=True
+    )
+    extra_preferences = st.text_area(
+        "extra_preferences",
+        placeholder="Tell us more... (e.g. quiet atmosphere, dog friendly, outdoor seating)",
+        label_visibility="collapsed",
+        height=100,
+    )
 
-# --- Recommendation Logic ---
+    submit = st.form_submit_button("✦ Find Places")
+
+st.markdown("</div>", unsafe_allow_html=True)
+
+# ── Recommendation Logic ─────────────────────────────────────────────────────
 if submit:
-    if not location:
+    if location == "Select a city":
         st.warning("Please select a City / Location.")
     else:
         with st.spinner("Finding the best places for you..."):
             try:
-                # 1. Validate Preferences
                 prefs = validate_preferences(
                     location=location,
                     budget=budget,
@@ -86,37 +285,38 @@ if submit:
                     extra_preferences=extra_preferences,
                 )
 
-                # 2. Filter Restaurants
                 candidates = filter_restaurants(df, prefs, max_results=20)
-
-                # 3. Build Prompts
                 system_prompt = build_system_prompt()
                 user_prompt = build_user_prompt(prefs, candidates)
-
-                # 4. Generate Recommendations via LLM
                 raw_response = llm_client.generate_recommendations(
                     system_prompt, user_prompt
                 )
-
-                # 5. Parse
                 parsed_data = parse_llm_response(raw_response)
 
-                st.success("Here are your top recommendations!")
-
+                medals = ["🥇", "🥈", "🥉"]
+                st.markdown("---")
+                st.markdown(
+                    '<p style="color:#a855f7;font-weight:700;font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;text-align:center;">Top Recommendations</p>',
+                    unsafe_allow_html=True,
+                )
                 for idx, rec in enumerate(parsed_data):
-                    with st.expander(
-                        f"{idx+1}. {rec.get('name', 'Unknown')}", expanded=True
-                    ):
-                        st.write(
-                            f"**Why we recommend it:** {rec.get('explanation', 'No explanation provided.')}"
-                        )
+                    medal = medals[idx] if idx < 3 else f"#{idx+1}"
+                    st.markdown(
+                        f"""
+                        <div class="rec-card">
+                            <div class="rec-rank">{medal} Recommendation {idx+1}</div>
+                            <div class="rec-name">{rec.get('name', 'Unknown')}</div>
+                            <div class="rec-explanation">{rec.get('explanation', 'No explanation provided.')}</div>
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
+                    )
 
             except NoResultsError as e:
                 st.warning(str(e))
             except NoCandidatesError as e:
                 st.warning(str(e))
             except FormatterError:
-                # Fallback to returning raw if parsing fails
                 st.success("Here are your top recommendations!")
                 st.write(raw_response)
             except Exception as e:
