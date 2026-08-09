@@ -1,4 +1,4 @@
-# 🍽️ AI-Powered Food Place Recommender
+# AI-Powered Food Place Recommender
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://food-place-recommender.streamlit.app/)
 
@@ -8,18 +8,18 @@ and uses AI to rank and explain the best options — all in seconds, right in yo
 
 ---
 
-## ✨ Features
+## Features
 
-- 🔍 **Smart Filtering** — Filters by city, cuisine, budget, and minimum rating
-- 🤝 **Graceful Relaxation** — Intelligently loosens constraints when results are sparse
-- 🧠 **AI-Powered Ranking** — Groq LLM explains *why* each restaurant suits your needs
-- 🎨 **Beautiful CLI** — Rich terminal UI with color-coded tables and medals (🥇🥈🥉)
-- ⚡ **Local Caching** — Dataset is cached to Parquet after first download for instant re-runs
-- 🛡️ **Robust Error Handling** — Rate-limit retries, model fallbacks, and JSON parse recovery
+- **Smart Filtering** — Filters by city, cuisine, budget, and minimum rating
+- **Graceful Relaxation** — Intelligently loosens constraints when results are sparse
+- **AI-Powered Ranking** — Groq LLM explains *why* each restaurant suits your needs
+- **Beautiful CLI** — Rich terminal UI with color-coded tables
+- **Local Caching** — Dataset is cached to Parquet after first download for instant re-runs
+- **Robust Error Handling** — Rate-limit retries, model fallbacks, and JSON parse recovery
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 - Python 3.9+
@@ -69,10 +69,10 @@ On the **first run**, the Zomato dataset (~10MB) is downloaded from Hugging Face
 
 ---
 
-## 📋 Usage Example
+## Usage Example
 
 ```
-🍽️ Welcome to the AI-Powered Food Place Recommender!
+Welcome to the AI-Powered Food Place Recommender!
 
 Which city? (e.g., delhi, mumbai, bangalore): delhi
 What is your budget? [low/medium/high] (medium): medium
@@ -81,21 +81,21 @@ Minimum rating? (0.0 to 5.0) (4.0): 4.2
 Any other preferences? (e.g., 'family-friendly', 'outdoor seating'): family-friendly
 
 ┌─────────────────────────────────────────────────────────────┐
-│         🏆 Top Restaurant Recommendations 🏆                │
+│             Top Restaurant Recommendations                  │
 ├──────┬──────────────────────┬────────────────────────────────┤
 │ Rank │ Restaurant Name      │ Why We Recommend It            │
 ├──────┼──────────────────────┼────────────────────────────────┤
-│ 🥇 1 │ Spice Garden         │ Highly rated North Indian...   │
-│ 🥈 2 │ Delhi Darbar         │ Great family atmosphere...     │
-│ 🥉 3 │ Punjabi Dhaba        │ Excellent value for money...   │
+│ 1    │ Spice Garden         │ Highly rated North Indian...   │
+│ 2    │ Delhi Darbar         │ Great family atmosphere...     │
+│ 3    │ Punjabi Dhaba        │ Excellent value for money...   │
 └──────┴──────────────────────┴────────────────────────────────┘
 
-Bon Appétit! 🍽️
+Bon Appétit!
 ```
 
 ---
 
-## 🏗️ Project Architecture
+## Project Architecture
 
 ```
 food-place-recommender/
@@ -129,7 +129,7 @@ User Input (CLI)
 
 ---
 
-## 🧪 Running Tests
+## Running Tests
 
 ```bash
 # All tests
@@ -146,7 +146,7 @@ pytest tests/test_integration.py -v
 
 ---
 
-## ⚙️ Configuration
+## Configuration
 
 | Variable | Default | Description |
 |---|---|---|
@@ -163,7 +163,7 @@ pytest tests/test_integration.py -v
 
 ---
 
-## 🛡️ Edge Case Handling
+## Edge Case Handling
 
 | Scenario | Behavior |
 |---|---|
@@ -177,7 +177,7 @@ pytest tests/test_integration.py -v
 
 ---
 
-## 📦 Dependencies
+## Dependencies
 
 | Package | Purpose |
 |---|---|
@@ -190,6 +190,6 @@ pytest tests/test_integration.py -v
 
 ---
 
-## 📄 License
+## License
 
 MIT License — feel free to use, fork, and extend.
