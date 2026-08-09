@@ -1,5 +1,7 @@
 # 🍽️ AI-Powered Food Place Recommender
 
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://food-place-recommender.streamlit.app/)
+
 An intelligent restaurant recommendation CLI tool powered by the **Groq LLM API** (llama3-8b-8192).
 It loads real-world Zomato restaurant data from Hugging Face, filters it against your preferences,
 and uses AI to rank and explain the best options — all in seconds, right in your terminal.
