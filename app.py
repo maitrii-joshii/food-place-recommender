@@ -294,30 +294,46 @@ if submit:
             extra_preferences=extra_preferences,
         )
 
-        candidates = filter_restaurants(df, prefs, max_results=20)
-        system_prompt = build_system_prompt()
-        user_prompt = build_user_prompt(prefs, candidates)
-        raw_response = llm_client.generate_recommendations(system_prompt, user_prompt)
-        parsed_data = parse_llm_response(raw_response)
+        with st.spinner("🔍 Finding the best places for you..."):
+            candidates = filter_restaurants(df, prefs, max_results=20)
+            system_prompt = build_system_prompt()
+            user_prompt = build_user_prompt(prefs, candidates)
+            raw_response = llm_client.generate_recommendations(
+                system_prompt, user_prompt
+            )
+            parsed_data = parse_llm_response(raw_response)
 
-        medals = ["🥇", "🥈", "🥉"]
-        st.markdown("---")
-        st.markdown(
-            '<p style="color:#a855f7;font-weight:700;font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;text-align:center;">Top Recommendations</p>',
-            unsafe_allow_html=True,
-        )
-        for idx, rec in enumerate(parsed_data):
-            medal = medals[idx] if idx < 3 else f"#{idx+1}"
+        # parse_llm_response can return a raw str as fallback when JSON fails
+        if isinstance(parsed_data, str):
+            st.markdown("---")
             st.markdown(
-                f"""
-                <div class="rec-card">
-                    <div class="rec-rank">{medal} Recommendation {idx+1}</div>
-                    <div class="rec-name">{rec.get('name', 'Unknown')}</div>
-                    <div class="rec-explanation">{rec.get('explanation', 'No explanation provided.')}</div>
-                </div>
-                """,
+                '<p style="color:#a855f7;font-weight:700;font-size:0.8rem;'
+                'letter-spacing:0.1em;text-transform:uppercase;text-align:center;">'
+                "Top Recommendations</p>",
                 unsafe_allow_html=True,
             )
+            st.write(parsed_data)
+        else:
+            medals = ["🥇", "🥈", "🥉"]
+            st.markdown("---")
+            st.markdown(
+                '<p style="color:#a855f7;font-weight:700;font-size:0.8rem;'
+                'letter-spacing:0.1em;text-transform:uppercase;text-align:center;">'
+                "Top Recommendations</p>",
+                unsafe_allow_html=True,
+            )
+            for idx, rec in enumerate(parsed_data):
+                medal = medals[idx] if idx < 3 else f"#{idx+1}"
+                st.markdown(
+                    f"""
+                    <div class="rec-card">
+                        <div class="rec-rank">{medal} Recommendation {idx+1}</div>
+                        <div class="rec-name">{rec.get('name', 'Unknown')}</div>
+                        <div class="rec-explanation">{rec.get('explanation', 'No explanation provided.')}</div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
 
     except NoResultsError:
         st.warning(
