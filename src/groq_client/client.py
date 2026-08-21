@@ -48,7 +48,7 @@ class GroqClient:
                 except Exception:
                     pass
 
-        self.model = model or "llama-3.1-8b-instant"
+        self.model = model or "openai/gpt-oss-120b"
         self.client = groq.Groq(api_key=self.api_key)
 
     def generate_recommendations(self, system_prompt: str, user_prompt: str) -> str:
