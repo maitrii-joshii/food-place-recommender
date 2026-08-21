@@ -68,7 +68,7 @@ def test_timeout_retry():
 
 
 def test_model_fallback():
-    client = GroqClient(api_key="test_key", model="llama-3.1-8b-instant")
+    client = GroqClient(api_key="test_key", model="openai/gpt-oss-120b")
 
     mock_completion = Mock()
     mock_completion.choices = [Mock(message=Mock(content='{"fallback": true}'))]
@@ -85,4 +85,4 @@ def test_model_fallback():
             response = client.generate_recommendations("sys", "user")
             assert response == '{"fallback": true}'
             assert mock_create.call_count == 2
-            assert client.model == "openai/gpt-oss-120b"
+            assert client.model == "qwen/qwen3.6-27b"

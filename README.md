@@ -2,7 +2,7 @@
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://food-place-recommender.streamlit.app/)
 
-An intelligent restaurant recommendation CLI tool powered by the **Groq LLM API** (llama3-8b-8192).
+An intelligent restaurant recommendation CLI tool powered by the **Groq LLM API** (openai/gpt-oss-120b).
 It loads real-world Zomato restaurant data from Hugging Face, filters it against your preferences,
 and uses AI to rank and explain the best options — all in seconds, right in your terminal.
 
@@ -56,7 +56,7 @@ cp .env.example .env
 Edit `.env`:
 ```env
 GROQ_API_KEY=gsk_your_actual_key_here
-GROQ_MODEL=llama3-8b-8192
+GROQ_MODEL=openai/gpt-oss-120b
 ```
 
 ### 3. Run the App
@@ -122,7 +122,7 @@ User Input (CLI)
             └─► Dataset (Hugging Face / Cache)
                     └─► Filtering Engine (location → budget → cuisine → rating)
                             └─► Prompt Builder (token-safe prompt)
-                                    └─► Groq LLM (llama3-8b-8192)
+                                    └─► Groq LLM (openai/gpt-oss-120b)
                                             └─► Response Parser (JSON + fallback)
                                                     └─► Rich CLI Display
 ```
@@ -151,7 +151,7 @@ pytest tests/test_integration.py -v
 | Variable | Default | Description |
 |---|---|---|
 | `GROQ_API_KEY` | *(required)* | Your Groq API key |
-| `GROQ_MODEL` | `llama3-8b-8192` | Groq model to use |
+| `GROQ_MODEL` | `openai/gpt-oss-120b` | Groq model to use |
 
 **Budget Tiers:**
 

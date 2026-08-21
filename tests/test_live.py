@@ -75,7 +75,9 @@ def run_test(
     user_prompt = build_user_prompt(prefs, candidates)
 
     # 5. Real Groq API call
-    console.print("[bold purple]>> Calling Groq API (llama3-8b-8192)...[/bold purple]")
+    console.print(
+        "[bold purple]>> Calling Groq API (openai/gpt-oss-120b)...[/bold purple]"
+    )
     with console.status(
         "[bold purple]Waiting for AI response...[/bold purple]", spinner="earth"
     ):

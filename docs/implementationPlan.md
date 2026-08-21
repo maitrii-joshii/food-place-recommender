@@ -178,7 +178,7 @@ Design the prompt template, integrate the Groq API, and wire the candidate list 
 - [ ] Load `GROQ_API_KEY` from `.env` using `python-dotenv`
 - [ ] Create `GroqClient` wrapper:
   - Accepts a prompt string
-  - Calls `client.chat.completions.create(model="llama3-8b-8192", ...)`
+  - Calls `client.chat.completions.create(model="openai/gpt-oss-120b", ...)`
   - Returns raw response text
 - [ ] Handle API errors: rate limits, timeouts, malformed responses
 
@@ -201,7 +201,7 @@ Design the prompt template, integrate the Groq API, and wire the candidate list 
   ```
 - [ ] Implement token budget management:
   - Estimate ~100 tokens per candidate
-  - Trim candidate list if it would exceed 80% of model context window (8192 tokens for `llama3-8b-8192`)
+  - Trim candidate list if it would exceed 80% of model context window (131072 tokens for `openai/gpt-oss-120b`)
 - [ ] Write prompt unit tests (check prompt contains all required fields)
 - [ ] Write integration test: send a mock candidate list to Groq and verify structured JSON response
 

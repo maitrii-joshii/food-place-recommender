@@ -99,11 +99,11 @@ class GroqClient:
 
             except groq.NotFoundError as e:
                 # If model is not found, try fallback if we are on the primary model
-                if self.model == "llama-3.1-8b-instant":
+                if self.model == "openai/gpt-oss-120b":
                     logger.warning(
-                        f"Model {self.model} not found, falling back to openai/gpt-oss-120b."
+                        f"Model {self.model} not found, falling back to qwen/qwen3.6-27b."
                     )
-                    self.model = "openai/gpt-oss-120b"
+                    self.model = "qwen/qwen3.6-27b"
                 else:
                     raise ModelUnavailableError(
                         f"Model {self.model} is unavailable."

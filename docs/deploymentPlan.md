@@ -35,7 +35,7 @@ Streamlit Community Cloud deploys directly from GitHub.
     *   Under the **"Secrets"** section, paste the Groq API Key and Model configuration just like in the `.env` file:
         ```toml
         GROQ_API_KEY = "gsk_your_actual_key_here"
-        GROQ_MODEL = "llama3-8b-8192"
+        GROQ_MODEL = "openai/gpt-oss-120b"
         ```
     *   *Streamlit will automatically load these as environment variables.*
 6.  **Deploy**: Click **"Deploy!"**. Streamlit will provision a container, install dependencies from `requirements.txt`, and launch the app.
