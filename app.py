@@ -198,8 +198,9 @@ except GroqClientError as e:
 # ── Metadata ────────────────────────────────────────────────────────────────
 # Build a map: display name (Title Case) → raw value (lowercase for matching)
 cities_raw = sorted(df["location"].dropna().unique().tolist())
-cities_display = [c.title() for c in cities_raw]
-cities_map = {c.title(): c for c in cities_raw}
+# Filter out any empty strings that might act as a placeholder option
+cities_display = [c.title() for c in cities_raw if c]
+cities_map = {c.title(): c for c in cities_raw if c}
 
 # ── Hero Section ────────────────────────────────────────────────────────────
 st.markdown(
@@ -214,6 +215,12 @@ st.markdown(
 st.markdown('<div class="form-card">', unsafe_allow_html=True)
 
 with st.form("preferences_form"):
+    st.markdown(
+        '<p style="color:#cbd5e1;font-size:0.95rem;margin-bottom:1rem;">'
+        '🗺️ Start by choosing your <strong style="color:#e2e8f0;">city</strong> and '
+        '<strong style="color:#e2e8f0;">budget</strong> — we\'ll handle the rest.</p>',
+        unsafe_allow_html=True,
+    )
     col1, col2 = st.columns([1, 1])
 
     with col1:
@@ -223,7 +230,8 @@ with st.form("preferences_form"):
         )
         location = st.selectbox(
             "city",
-            options=["Select a city"] + cities_display,
+            options=cities_display,
+            index=0,
             label_visibility="collapsed",
         )
 
@@ -277,60 +285,52 @@ st.markdown("</div>", unsafe_allow_html=True)
 
 # ── Recommendation Logic ─────────────────────────────────────────────────────
 if submit:
-    if location == "Select a city":
-        st.warning("Please select a City / Location.")
-    else:
-        # Resolve display name back to lowercase raw value for matching
-        location_raw = cities_map.get(location, location.lower())
-        with st.spinner("Finding the best places for you..."):
-            try:
-                prefs = validate_preferences(
-                    location=location_raw,
-                    budget=budget,
-                    cuisine=cuisine if cuisine else "",
-                    min_rating=str(min_rating),
-                    extra_preferences=extra_preferences,
-                )
+    try:
+        prefs = validate_preferences(
+            location=cities_map[location],
+            budget=budget,
+            cuisine=cuisine if cuisine else "",
+            min_rating=str(min_rating),
+            extra_preferences=extra_preferences,
+        )
 
-                candidates = filter_restaurants(df, prefs, max_results=20)
-                system_prompt = build_system_prompt()
-                user_prompt = build_user_prompt(prefs, candidates)
-                raw_response = llm_client.generate_recommendations(
-                    system_prompt, user_prompt
-                )
-                parsed_data = parse_llm_response(raw_response)
+        candidates = filter_restaurants(df, prefs, max_results=20)
+        system_prompt = build_system_prompt()
+        user_prompt = build_user_prompt(prefs, candidates)
+        raw_response = llm_client.generate_recommendations(system_prompt, user_prompt)
+        parsed_data = parse_llm_response(raw_response)
 
-                medals = ["🥇", "🥈", "🥉"]
-                st.markdown("---")
-                st.markdown(
-                    '<p style="color:#a855f7;font-weight:700;font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;text-align:center;">Top Recommendations</p>',
-                    unsafe_allow_html=True,
-                )
-                for idx, rec in enumerate(parsed_data):
-                    medal = medals[idx] if idx < 3 else f"#{idx+1}"
-                    st.markdown(
-                        f"""
-                        <div class="rec-card">
-                            <div class="rec-rank">{medal} Recommendation {idx+1}</div>
-                            <div class="rec-name">{rec.get('name', 'Unknown')}</div>
-                            <div class="rec-explanation">{rec.get('explanation', 'No explanation provided.')}</div>
-                        </div>
-                        """,
-                        unsafe_allow_html=True,
-                    )
+        medals = ["🥇", "🥈", "🥉"]
+        st.markdown("---")
+        st.markdown(
+            '<p style="color:#a855f7;font-weight:700;font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;text-align:center;">Top Recommendations</p>',
+            unsafe_allow_html=True,
+        )
+        for idx, rec in enumerate(parsed_data):
+            medal = medals[idx] if idx < 3 else f"#{idx+1}"
+            st.markdown(
+                f"""
+                <div class="rec-card">
+                    <div class="rec-rank">{medal} Recommendation {idx+1}</div>
+                    <div class="rec-name">{rec.get('name', 'Unknown')}</div>
+                    <div class="rec-explanation">{rec.get('explanation', 'No explanation provided.')}</div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
 
-            except NoResultsError:
-                st.warning(
-                    "😕 No restaurants found matching your preferences. "
-                    "Try a different cuisine, lower the minimum rating, or broaden your budget."
-                )
-            except NoCandidatesError:
-                st.warning(
-                    "😕 Not enough candidates to generate recommendations. "
-                    "Try relaxing your filters."
-                )
-            except FormatterError:
-                st.success("Here are your top recommendations!")
-                st.write(raw_response)
-            except Exception as e:
-                st.error(f"Something went wrong. Please try again. (Details: {e})")
+    except NoResultsError:
+        st.warning(
+            "😕 No restaurants found matching your preferences. "
+            "Try a different cuisine, lower the minimum rating, or broaden your budget."
+        )
+    except NoCandidatesError:
+        st.warning(
+            "😕 Not enough candidates to generate recommendations. "
+            "Try relaxing your filters."
+        )
+    except FormatterError:
+        st.success("Here are your top recommendations!")
+        st.write(raw_response)
+    except Exception as e:
+        st.error(f"Something went wrong. Please try again. (Details: {e})")
