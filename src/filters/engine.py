@@ -75,9 +75,10 @@ def filter_restaurants(
             temp = temp[temp["cost"] <= budget_ceiling]
 
         # Rating Filter
-        if min_rating is not None:
-            # If min_rating is 0.0, we just include everything (even None if we want, but usually it means all rated places)
-            # F8 edge case: None ratings are excluded unless min_rating constraint is completely relaxed.
+        if min_rating is not None and min_rating > 0.0:
+            # Only filter by rating when there's an actual minimum threshold.
+            # At 0.0, the user has no rating requirement so all restaurants
+            # (including unrated ones) are included.
             temp = temp[temp["rating"].notnull() & (temp["rating"] >= min_rating)]
 
         return temp
