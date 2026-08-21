@@ -78,7 +78,7 @@ This document catalogs all known edge cases across every layer of the pipeline. 
 | G5 | Groq returns plain text instead of JSON | Parse failure | Attempt to extract JSON; fall back to raw text display | Try `json.loads()`; if fails, try regex extraction; if still fails, surface raw Groq text with a warning |
 | G6 | Groq returns fewer recommendations than candidates sent | Partial results | Display what was returned; note that some options were not ranked | Accept partial results; do not fail |
 | G7 | Groq hallucinates a restaurant not in the candidate list | Fabricated data displayed | Cross-validate each returned restaurant name against the candidate list | After parsing, filter out any `name` not present in the original candidate list |
-| G8 | Model `llama3-8b-8192` is deprecated or unavailable | API error | Fall back to next available Groq model | Catch model-not-found error; try `llama3-70b-8192` as fallback |
+| G8 | Model `llama-3.1-8b-instant` is deprecated or unavailable | API error | Fall back to next available Groq model | Catch model-not-found error; try `openai/gpt-oss-120b` as fallback |
 
 ---
 

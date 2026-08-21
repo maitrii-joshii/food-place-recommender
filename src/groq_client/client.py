@@ -20,13 +20,35 @@ load_dotenv()
 
 class GroqClient:
     def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
-        self.api_key = api_key or os.environ.get("GROQ_API_KEY")
+        if not api_key:
+            api_key = os.environ.get("GROQ_API_KEY")
+            if not api_key or api_key == "your_key_here":
+                try:
+                    import streamlit as st
+
+                    if "GROQ_API_KEY" in st.secrets:
+                        api_key = st.secrets["GROQ_API_KEY"]
+                except Exception:
+                    pass
+
+        self.api_key = api_key
         if not self.api_key or self.api_key == "your_key_here":
             raise ConfigError(
-                "Invalid or missing GROQ_API_KEY. Please check your .env file."
+                "Invalid or missing GROQ_API_KEY. Please check your .env file or Streamlit secrets."
             )
 
-        self.model = model or os.environ.get("GROQ_MODEL", "llama-3.1-8b-instant")
+        if not model:
+            model = os.environ.get("GROQ_MODEL")
+            if not model:
+                try:
+                    import streamlit as st
+
+                    if "GROQ_MODEL" in st.secrets:
+                        model = st.secrets["GROQ_MODEL"]
+                except Exception:
+                    pass
+
+        self.model = model or "llama-3.1-8b-instant"
         self.client = groq.Groq(api_key=self.api_key)
 
     def generate_recommendations(self, system_prompt: str, user_prompt: str) -> str:
@@ -79,9 +101,9 @@ class GroqClient:
                 # If model is not found, try fallback if we are on the primary model
                 if self.model == "llama-3.1-8b-instant":
                     logger.warning(
-                        f"Model {self.model} not found, falling back to llama-3.1-70b-versatile."
+                        f"Model {self.model} not found, falling back to openai/gpt-oss-120b."
                     )
-                    self.model = "llama-3.1-70b-versatile"
+                    self.model = "openai/gpt-oss-120b"
                 else:
                     raise ModelUnavailableError(
                         f"Model {self.model} is unavailable."

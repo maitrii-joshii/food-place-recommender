@@ -85,4 +85,4 @@ def test_model_fallback():
             response = client.generate_recommendations("sys", "user")
             assert response == '{"fallback": true}'
             assert mock_create.call_count == 2
-            assert client.model == "llama-3.1-70b-versatile"
+            assert client.model == "openai/gpt-oss-120b"

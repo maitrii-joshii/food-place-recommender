@@ -171,7 +171,7 @@ pytest tests/test_integration.py -v
 | Cuisine not found (exact) | Falls back to fuzzy matching |
 | Too few results | Cascading relaxation (cuisine → rating → budget) |
 | Groq rate limit hit | Exponential backoff with up to 3 retries |
-| Groq model unavailable | Automatic fallback to `llama3-70b-8192` |
+| Groq model unavailable | Automatic fallback to `openai/gpt-oss-120b` |
 | Malformed LLM JSON | Regex extraction + schema validation + raw string fallback |
 | `NEW` / `-` ratings | Treated as `None` (unrated), excluded from rating filters |
 

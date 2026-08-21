@@ -147,7 +147,7 @@ This document defines the evaluation criteria for each implementation phase. For
 | ID | Criterion | How to Verify |
 |---|---|---|
 | E5.12 | Prompt and response are logged at `DEBUG` level for inspection | Enable debug logging; verify prompt logged |
-| E5.13 | Groq model is configurable via environment variable | Set `GROQ_MODEL=llama3-70b-8192` in `.env`; verify it is used |
+| E5.13 | Groq model is configurable via environment variable | Set `GROQ_MODEL=openai/gpt-oss-120b` in `.env`; verify it is used |
 
 ---
 
