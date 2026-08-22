@@ -11,10 +11,8 @@ and uses AI to rank and explain the best options — available as both an intera
 ## 📺 Demo
 
 <div align="center">
-  <video src="video/demo.mp4" width="100%" autoplay loop muted playsinline></video>
+  <video src="video/food-place-recommender.webm" width="100%" autoplay loop muted playsinline></video>
 </div>
-
-*(Drop your recorded `demo.mp4` into the `video/` folder to display it here)*
 
 ---
 
