@@ -2,18 +2,28 @@
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://food-place-recommender.streamlit.app/)
 
-An intelligent restaurant recommendation CLI tool powered by the **Groq LLM API** (openai/gpt-oss-120b).
+An intelligent restaurant recommendation assistant powered by the **Groq LLM API** (`openai/gpt-oss-120b`).
 It loads real-world Zomato restaurant data from Hugging Face, filters it against your preferences,
-and uses AI to rank and explain the best options — all in seconds, right in your terminal.
+and uses AI to rank and explain the best options — available as both an interactive **Streamlit Web App** and a **Rich CLI**.
+
+---
+
+## 📺 Demo
+
+<div align="center">
+  <video src="video/demo.mp4" width="100%" autoplay loop muted playsinline></video>
+</div>
+
+*(Drop your recorded `demo.mp4` into the `video/` folder to display it here)*
 
 ---
 
 ## Features
 
-- **Smart Filtering** — Filters by city, cuisine, budget, and minimum rating
+- **Smart Filtering** — Filters by location/area (Bangalore), cuisine, budget, and minimum rating
 - **Graceful Relaxation** — Intelligently loosens constraints when results are sparse
 - **AI-Powered Ranking** — Groq LLM explains *why* each restaurant suits your needs
-- **Beautiful CLI** — Rich terminal UI with color-coded tables
+- **Dual Interfaces** — Sleek Streamlit Dark Mode Web UI + Rich Terminal CLI
 - **Local Caching** — Dataset is cached to Parquet after first download for instant re-runs
 - **Robust Error Handling** — Rate-limit retries, model fallbacks, and JSON parse recovery
 
@@ -61,6 +71,12 @@ GROQ_MODEL=openai/gpt-oss-120b
 
 ### 3. Run the App
 
+**Web UI (Streamlit):**
+```bash
+streamlit run app.py
+```
+
+**Terminal CLI:**
 ```bash
 python main.py
 ```
@@ -69,12 +85,12 @@ On the **first run**, the Zomato dataset (~10MB) is downloaded from Hugging Face
 
 ---
 
-## Usage Example
+## CLI Usage Example
 
 ```
 Welcome to the AI-Powered Food Place Recommender!
 
-Which city? (e.g., delhi, mumbai, bangalore): delhi
+Which location? (e.g., indiranagar, koramangala, banashankari): koramangala
 What is your budget? [low/medium/high] (medium): medium
 Any specific cuisine? (e.g., north indian, chinese, italian, or leave blank): north indian
 Minimum rating? (0.0 to 5.0) (4.0): 4.2
@@ -86,7 +102,7 @@ Any other preferences? (e.g., 'family-friendly', 'outdoor seating'): family-frie
 │ Rank │ Restaurant Name      │ Why We Recommend It            │
 ├──────┼──────────────────────┼────────────────────────────────┤
 │ 1    │ Spice Garden         │ Highly rated North Indian...   │
-│ 2    │ Delhi Darbar         │ Great family atmosphere...     │
+│ 2    │ Royal Darbar         │ Great family atmosphere...     │
 │ 3    │ Punjabi Dhaba        │ Excellent value for money...   │
 └──────┴──────────────────────┴────────────────────────────────┘
 
@@ -167,7 +183,7 @@ pytest tests/test_integration.py -v
 
 | Scenario | Behavior |
 |---|---|
-| City not in dataset | Raises `NoResultsError` with a re-prompt |
+| Location not in dataset | Raises `NoResultsError` with a re-prompt |
 | Cuisine not found (exact) | Falls back to fuzzy matching |
 | Too few results | Cascading relaxation (cuisine → rating → budget) |
 | Groq rate limit hit | Exponential backoff with up to 3 retries |
