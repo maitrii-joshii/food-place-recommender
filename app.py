@@ -253,7 +253,7 @@ with st.form("preferences_form"):
         )
 
     st.markdown(
-        '<div class="field-label">✕ Cuisine (Optional)</div>', unsafe_allow_html=True
+        '<div class="field-label">🍜 Cuisine (Optional)</div>', unsafe_allow_html=True
     )
     cuisine = st.text_input(
         "cuisine",
