@@ -228,14 +228,14 @@ with st.form("preferences_form"):
 
     with col1:
         st.markdown(
-            '<div class="field-label">📍 City (Required)</div>',
+            '<div class="field-label">📍 Location (Required)</div>',
             unsafe_allow_html=True,
         )
         location = st.selectbox(
-            "city",
+            "location",
             options=cities_display,
             index=None,
-            placeholder="Choose a city...",
+            placeholder="Choose a location...",
             label_visibility="collapsed",
         )
 
@@ -289,7 +289,7 @@ with st.form("preferences_form"):
 # ── Recommendation Logic ─────────────────────────────────────────────────────
 if submit:
     if not location:
-        st.warning("⚠️ Please select a city before searching.")
+        st.warning("⚠️ Please select a location before searching.")
     else:
         try:
             prefs = validate_preferences(
