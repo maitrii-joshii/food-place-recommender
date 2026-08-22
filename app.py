@@ -46,8 +46,8 @@ html, body, [class*="css"] {
     line-height: 1.6;
 }
 
-/* ── Card ── */
-.form-card {
+/* ── Card: style the Streamlit form container directly ── */
+div[data-testid="stForm"] {
     background: #151728;
     border: 1px solid #1e2340;
     border-radius: 16px;
@@ -211,9 +211,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# ── Form ────────────────────────────────────────────────────────────────────
-st.markdown('<div class="form-card">', unsafe_allow_html=True)
-
 with st.form("preferences_form"):
     col1, col2 = st.columns([1, 1])
 
@@ -276,7 +273,6 @@ with st.form("preferences_form"):
 
     submit = st.form_submit_button("✦ Find Places")
 
-st.markdown("</div>", unsafe_allow_html=True)
 
 # ── Recommendation Logic ─────────────────────────────────────────────────────
 if submit:
