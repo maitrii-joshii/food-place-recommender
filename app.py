@@ -215,12 +215,6 @@ st.markdown(
 st.markdown('<div class="form-card">', unsafe_allow_html=True)
 
 with st.form("preferences_form"):
-    st.markdown(
-        '<p style="color:#cbd5e1;font-size:0.95rem;margin-bottom:1rem;">'
-        '🗺️ Start by choosing your <strong style="color:#e2e8f0;">city</strong> and '
-        '<strong style="color:#e2e8f0;">budget</strong> — we\'ll handle the rest.</p>',
-        unsafe_allow_html=True,
-    )
     col1, col2 = st.columns([1, 1])
 
     with col1:
