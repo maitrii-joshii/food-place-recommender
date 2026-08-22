@@ -121,8 +121,10 @@ food-place-recommender/
 │   ├── groq_client/         # Groq API wrapper with retries & fallbacks
 │   ├── formatter/           # JSON parsing & schema validation of LLM output
 │   └── ui/                  # Rich CLI: input collection & results display
-├── tests/                   # Unit + integration tests (37 tests)
-├── main.py                  # Entry point — orchestrates the full pipeline
+├── tests/                   # Unit + integration tests (43 tests)
+├── video/                   # Demo video recordings
+├── app.py                   # Streamlit Web Application
+├── main.py                  # CLI Entry point — orchestrates the full pipeline
 ├── .env.example             # Environment variable template
 ├── requirements.txt         # Python dependencies
 └── setup.bat                # Windows one-click setup script
@@ -131,14 +133,14 @@ food-place-recommender/
 ### Pipeline Flow
 
 ```
-User Input (CLI)
+User Input (Web UI / CLI)
     └─► Preference Validator
             └─► Dataset (Hugging Face / Cache)
                     └─► Filtering Engine (location → budget → cuisine → rating)
                             └─► Prompt Builder (token-safe prompt)
                                     └─► Groq LLM (openai/gpt-oss-120b)
                                             └─► Response Parser (JSON + fallback)
-                                                    └─► Rich CLI Display
+                                                    └─► Streamlit UI / Rich CLI Display
 ```
 
 ---
@@ -146,11 +148,12 @@ User Input (CLI)
 ## Running Tests
 
 ```bash
-# All tests
+# All tests (43 passed)
 pytest tests/ -v
 
 # By module
 pytest tests/test_preprocessing.py -v
+pytest tests/test_preferences.py -v
 pytest tests/test_engine.py -v
 pytest tests/test_groq_client.py -v
 pytest tests/test_prompt.py -v
@@ -185,7 +188,7 @@ pytest tests/test_integration.py -v
 | Cuisine not found (exact) | Falls back to fuzzy matching |
 | Too few results | Cascading relaxation (cuisine → rating → budget) |
 | Groq rate limit hit | Exponential backoff with up to 3 retries |
-| Groq model unavailable | Automatic fallback to `openai/gpt-oss-120b` |
+| Groq model unavailable | Automatic fallback to `qwen/qwen3.6-27b` |
 | Malformed LLM JSON | Regex extraction + schema validation + raw string fallback |
 | `NEW` / `-` ratings | Treated as `None` (unrated), excluded from rating filters |
 
@@ -195,12 +198,15 @@ pytest tests/test_integration.py -v
 
 | Package | Purpose |
 |---|---|
+| `streamlit` | Interactive Web User Interface |
 | `datasets` | Hugging Face dataset loading |
 | `pandas` | Data manipulation |
 | `pyarrow` | Parquet caching |
 | `groq` | Groq Python SDK |
 | `python-dotenv` | `.env` file support |
 | `rich` | Beautiful terminal UI |
+| `pytest` | Testing framework |
+| `black` / `flake8` | Code formatting & linting |
 
 ---
 

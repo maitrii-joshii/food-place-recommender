@@ -25,11 +25,11 @@ def collect_preferences(
     while True:
         # 1. Location
         if known_cities:
-            # Show a few popular cities as hints
+            # Show a few popular locations as hints
             hints = ", ".join(known_cities[:5])
-            loc_prompt = f"Which city? (e.g., {hints})"
+            loc_prompt = f"Which location? (e.g., {hints})"
         else:
-            loc_prompt = "Which city?"
+            loc_prompt = "Which location?"
 
         location = Prompt.ask(f"[bold cyan]{loc_prompt}[/bold cyan]")
 
