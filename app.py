@@ -24,26 +24,38 @@ html, body, [class*="css"] {
     color: #e2e8f0;
 }
 
-/* hide default streamlit header/footer */
-#MainMenu, footer, header { visibility: hidden; }
+/* hide default streamlit header/footer completely without reserving DOM space */
+#MainMenu, footer, header {
+    display: none !important;
+    height: 0 !important;
+}
+
+/* ── Container Layout ── */
+.block-container {
+    padding-top: 1.5rem !important;
+    padding-bottom: 2rem !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    max-width: 780px !important;
+}
 
 /* ── Hero ── */
 .hero-title {
     text-align: center;
-    font-size: 2.8rem;
+    font-size: 2.5rem;
     font-weight: 800;
     background: linear-gradient(90deg, #a855f7, #ec4899);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    margin-bottom: 0.4rem;
+    margin-bottom: 0.3rem;
     line-height: 1.2;
 }
 .hero-sub {
     text-align: center;
     color: #94a3b8;
-    font-size: 1rem;
-    margin-bottom: 2rem;
-    line-height: 1.6;
+    font-size: 0.95rem;
+    margin-bottom: 1.25rem;
+    line-height: 1.5;
 }
 
 /* ── Card: style the Streamlit form container directly ── */
@@ -51,7 +63,7 @@ div[data-testid="stForm"] {
     background: #151728;
     border: 1px solid #1e2340;
     border-radius: 16px;
-    padding: 2rem 2.2rem 2.4rem;
+    padding: 1.5rem 1.8rem 1.8rem;
     max-width: 760px;
     margin: 0 auto;
 }
@@ -268,7 +280,7 @@ with st.form("preferences_form"):
         "extra_preferences",
         placeholder="Tell us more... (e.g. quiet atmosphere, dog friendly, outdoor seating)",
         label_visibility="collapsed",
-        height=100,
+        height=75,
     )
 
     submit = st.form_submit_button("✦ Find Places")
